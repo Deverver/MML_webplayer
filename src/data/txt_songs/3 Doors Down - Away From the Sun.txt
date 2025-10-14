@@ -1,0 +1,7 @@
+Song Title: 3 Doors Down - Away From the Sun
+Composer: PocketScout
+Rank: A
+Instrument: Lute
+Melody: t64<g16c16>c16<g16c16>c16<<b16>>c16<g16<b16>b16>c16d16e16<f16>c16<a16f16>c16<a16f16>c16<e16>c16<a16e16b16>c16<g16>c16 <<g16>>d16<<g16>>c16<<g16>b8<g16g16>>d16<<g16>>c16<<g16>b8>c16<f16>c16<a16f16>c16<a16f16>c16<e16>c16<a16e16b16>c16<g16>c16<c16>c16<g16c16>c16<g16c16>c16<<b16>>c16<g16<b16>b16>c16d16e16<f16>c16<a16f16>c16<a16f16>c16<e16>c16<a16e16b16>c16<g16>c16<<g16>>d16<<g16>>c16<<g16>b8<g16g16>>d16<<g16>>c16<<g16>b8>c16<f16>c16<a16f16>c16<a16f16>c16<e16>c16<a16e16b16>c16<g16>c16<c16>c16<g16c16>c16<g16c16>c16<<b16>>c16<g16<b16>b16>c16d16e16<f16>c16<a16f16>c16<a16f16>c16<e16>c16<a16e16b16>c16<g16>c16 <<g16>>d16<<g16>>c16<<g16>b8<g16g16>>d16<<g16>>c16<<g16>b8>c1&c1&c1&c1&c16
+Harmony 1: r1r1r1r1r1r1r1r1r1r1r1r2.r8<c16c16f8.f16f4c16e16g8<b16>e16g8<f8.f16f4>e16f16g16d8c16c8<f8.f16f4>c16e16g8<b16>e16g8
+Harmony 2: r1r1r1r1o2f2e2c2<b2>f2e2<g2g4g8g8>f2e2c2<b2>f2e2<g2g4<f8c2<b2>f2e2<g2g4<f8>f8>c2c4<<b4>f2>c4<b4f4f4>c4<b4f2f4f4g1&g2

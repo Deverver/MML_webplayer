@@ -1,0 +1,7 @@
+Song Title: 9th Article of Faith
+Composer: tachyglossus
+Rank: Practice
+Instrument: Mandolin
+Melody: t100v14 a8.g16afagg8g8g2b.b8gba.a8af>c8.c16c8c8<a>c<b.b8b2>d<b>c<a8a8bgaff8e8f8g8ag8g8f1
+Harmony 1: v12c2<b2a2d&>c#c1c2c2<d#d1g1c2a2cc#d2<g2>c2f2<a2>
+Harmony 2: 

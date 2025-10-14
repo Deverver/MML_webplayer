@@ -1,0 +1,7 @@
+Song Title: 7th Article of Faith
+Composer: tachyglossus
+Rank: F
+Instrument: Ukulele
+Melody: t100 v14 e8.d16cc8.d16e8.f16g2a8.b16>c<b8.a16gga8.g16ff8.a16g8.f16ee8.g16f8.e16d2.c2
+Harmony 1: v10 ge2>c<b2&ef>cc2c#d2<b>c2<ga2be&c
+Harmony 2: v89rr2.r2.r2.e2ar2gr2cf2ar2

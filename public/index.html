@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>MML Player</title>
+</head>
+<body class="p-4">
+<h1>MML Song Player</h1>
+
+<h2>Melody Only</h2>
+<select id="melody-only"></select>
+
+<h2>Melody + Harmony</h2>
+<select id="melody-plus-harmony"></select>
+
+<h2>Full Songs</h2>
+<select id="full-songs"></select>
+
+<div style="margin-top: 10px;">
+    <button id="play-btn">▶️ Play</button>
+    <button id="stop-btn">⏹️ Stop</button>
+</div>
+
+<div style="margin-top: 10px;">
+    <label for="volume">🔊 Volume</label>
+    <input type="range" id="volume" min="0" max="100" value="80" />
+</div>
+
+<script type="module" src="/app.js"></script>
+</body>
+</html>

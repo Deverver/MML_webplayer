@@ -1,0 +1,7 @@
+Song Title: 10th Article of Faith
+Composer: tachyglossus
+Rank: F
+Instrument: Ukulele
+Melody: t120 v14 e.e8dc8.d16e8.g16ge8.d16c8.d16 e8.a16a&a8.c16d8.e16f8.f16e8.e16d8.d16e d2.d#ee8.e16dc8.d16e8.g16ge8.d16c8.d16 e8.a16a2e8.e16f8.f16ed.c8c2.g>c2<ge aa8a8aaa2&bag.g8gg>c.c8<ge ad8d8efgg8g8a8a8>cd2c2
+Harmony 1: v14 r1c2c8.r16r c2r2 r1 r1 r1 c2c8.r16r c2r2 r1 r1 e2er r1 f#1 r1 e2.r r1 c1 f2e2
+Harmony 2: v12 <g2f2<a2>f#2 g2<g2>deff# b2.rg2f2<a2>f#2 g1defgg2.dc2>c2<f2fed1b2>cdc2c<g >c<aa2<g1>a&b>c2
