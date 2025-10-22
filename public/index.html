@@ -1,31 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8"/>
     <title>MML Player</title>
 </head>
 <body class="p-4">
 <h1>MML Song Player</h1>
 
-<h2>Melody Only</h2>
-<select id="melody-only"></select>
+<!-- Song Select Panel-->
+<div>
+    <h2>Melody Only</h2>
+    <select id="melody-only"></select>
 
-<h2>Melody + Harmony</h2>
-<select id="melody-plus-harmony"></select>
+    <h2>Melody + Harmony</h2>
+    <select id="melody-plus-harmony"></select>
 
-<h2>Full Songs</h2>
-<select id="full-songs"></select>
-
-<div style="margin-top: 10px;">
-    <button id="play-btn">▶️ Play</button>
-    <button id="stop-btn">⏹️ Stop</button>
+    <h2>Full Songs</h2>
+    <select id="full-songs"></select>
 </div>
 
-<div style="margin-top: 10px;">
-    <label for="volume">🔊 Volume</label>
-    <input type="range" id="volume" min="0" max="100" value="80" />
+
+<!-- Controls Panel-->
+<div>
+    <div style="margin-top: 10px;">
+        <button id="play-btn">▶️ Play</button>
+        <button id="stop-btn">⏹️ Stop</button>
+    </div>
+
+
+    <div style="margin-top: 10px;">
+        <label for="volume">🔊 Volume</label>
+        <input type="range" id="volume" min="0" max="100" value="50"/>
+    </div>
+
+
+    <label>Melody___Instrument:</label>
+    <select id="melody-instrument"></select><br>
+
+    <label>Harmony 1 Instrument:</label>
+    <select id="harmony1-instrument"></select><br>
+
+    <label>Harmony 2 Instrument:</label>
+    <select id="harmony2-instrument"></select>
 </div>
 
+
+<script src="https://cdn.jsdelivr.net/npm/soundfont-player@0.12.0/dist/soundfont-player.js"></script>
 <script type="module" src="/app.js"></script>
 </body>
 </html>
