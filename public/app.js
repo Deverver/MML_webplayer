@@ -186,13 +186,18 @@ function stopPlayback() {
 }
 
 // --- Volume Slider (True Mute + Realtime Volume) (UI Event) ---
-// Do not know why but every iteration of this just does not work,
-// Hypothesis is that generated sound from SoundFonts has an interval gain val.
+// Do not know why but every iteration of this just does not work
+// Hypothesis MasterGain cannot be updated in runtime for some reason
 volumeSlider.addEventListener("input", () => {
     const sliderGain = volumeSlider.value / 100;
-    if (sliderGain === 0) {
+    masterGain.gain.value = volumeSlider.value / 100;
+    console.log(volumeSlider.value);
+    console.log(masterGain.gain.value);
+
+    if (sliderGain.gain.value === 0) {
         masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
     }
+
     masterGain.gain.linearRampToValueAtTime(sliderGain, audioCtx.currentTime + 0.05);
 });
 
@@ -274,24 +279,24 @@ async function schedulePlayback() {
         const {notes} = parseMML(track.data);
         let beat = 0;
 
-        notes.forEach(noteObj => {
+        notes.forEach(n => {
             // --- This section should normalize time & tempo ---
-            const durBeats = 4 / noteObj.duration;
+            const durBeats = 4 / n.duration;
             const durSec = durBeats * (60 / globalTempo);
             const noteTime = startTime + beat * (60 / globalTempo);
 
-            if (noteObj.note) {
+            if (n.note) {
                 // Unsure about the 15 val here. 15 would indicate the max volume value from mml keywords. But this section of notes have already been parsed.
                 // Dividing by 15 here might be why audio never reaches 0 volume
                 const noteGain = audioCtx.createGain();
-                const volGain = noteObj.volume / 15;
+                const volGain = n.volume / 15;
                 noteGain.gain.value = volGain;
 
-                // connect the note’s gain to the track gain
+                // Connect the note’s gain to the track gain
                 noteGain.connect(track.trackGain);
 
-                // 🔥 FIX: direct Soundfont to output into noteGain
-                const node = track.inst.play(noteObj.note, noteTime, {duration: durSec, destination: noteGain});
+                // Cgpt fix: direct Soundfont to output into noteGain
+                const node = track.inst.play(n.note, noteTime, {duration: durSec, destination: noteGain});
 
                 scheduledNotes.push({node, noteGain, mmlVol: volGain});
             }

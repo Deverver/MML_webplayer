@@ -62,4 +62,4 @@ server.get("/songs/:index", (req, res) => {
     res.json(song);
 });
 
-server.listen(PORT, () => console.log(`✅ Server running at http://localhost:${PORT}`));
+server.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
