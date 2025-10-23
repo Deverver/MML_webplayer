@@ -22,9 +22,8 @@ server.use(logger);
 
 const songsFile = path.resolve(__dirname, "./data/songs.json");
 
-/**
- * Helper: Filter valid songs
- */
+
+// --- Filter valid songs into categories (Helper) ---
 function getFilteredSongs() {
     const allSongs = JSON.parse(fs.readFileSync(songsFile, "utf-8"));
 
