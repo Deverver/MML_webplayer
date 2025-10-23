@@ -1,3 +1,20 @@
+/** Overall structure of this project needs to change, whenever another modern DB, like MongoDB, is learned.
+ *
+ *  The Scale of this project currently:
+ *  - Songs: About 9000 songs in MML format inside individual .txt files, up to about 12000, if midi files are also converted.
+ *  - Current song scope: Each song contain the following data;
+ *    {title:string, composer:string, rank:string, instrument:string, melody:mml-string, harmony1:mml-string, harmony2:mml-string}.
+ *  - Instruments: Currently 23 instruments are supported via "soundfont-player@0.12.0/dist/soundfont-player"
+ *  - Instrument future scope: Goal is to have 100+ instruments including some synthesizers.
+ *
+ *  Current structural concerns:
+ *  - Project goal requires a DataBase, large amounts of storage is necessary, the 9000 songs in Json format alone,
+ *    would be over 94.500 lines, being a Json file at 8.87 MB. Needless to say that is too much data for a simple page load.
+ *  - At the moment all the data fields inside the Song.Json is loaded into the song objects, good practice would be to only load songObj.title & a hidden songObj.id in the UI
+ *
+ *
+ **/
+
 // --- DOM Elements ---
 const melodyOnlySelect = document.getElementById("melody-only");
 const melodyPlusSelect = document.getElementById("melody-plus-harmony");
@@ -258,12 +275,14 @@ async function schedulePlayback() {
         let beat = 0;
 
         notes.forEach(noteObj => {
-            // --- This section should  ---
+            // --- This section should normalize time & tempo ---
             const durBeats = 4 / noteObj.duration;
             const durSec = durBeats * (60 / globalTempo);
             const noteTime = startTime + beat * (60 / globalTempo);
 
             if (noteObj.note) {
+                // Unsure about the 15 val here. 15 would indicate the max volume value from mml keywords. But this section of notes have already been parsed.
+                // Dividing by 15 here might be why audio never reaches 0 volume
                 const noteGain = audioCtx.createGain();
                 const volGain = noteObj.volume / 15;
                 noteGain.gain.value = volGain;

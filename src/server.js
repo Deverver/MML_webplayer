@@ -19,9 +19,7 @@ server.use(express.json());
 server.use(express.static(path.join(__dirname, "../public")));
 server.use(logger);
 
-
 const songsFile = path.resolve(__dirname, "./data/songs.json");
-
 
 // --- Filter valid songs into categories (Helper) ---
 function getFilteredSongs() {
@@ -50,13 +48,13 @@ function getFilteredSongs() {
     return { melodyOnly, melodyPlusHarmony, fullSongs };
 }
 
-// Send categorized songs
+// --- Send categorized songs ---
 server.get("/songs", (req, res) => {
     const categorized = getFilteredSongs();
     res.json(categorized);
 });
 
-// Individual song route
+// --- Individual song route ---
 server.get("/songs/:index", (req, res) => {
     const allSongs = JSON.parse(fs.readFileSync(songsFile, "utf-8"));
     const song = allSongs[req.params.index];
