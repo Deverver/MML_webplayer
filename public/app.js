@@ -129,10 +129,6 @@ function parseMML(mml) {
     return {notes, tempo};
 }
 
-function noteLengthToSeconds(length, tempo) {
-    return (4 / length) * (60 / tempo);
-}
-
 // --- Load Songs ---
 async function loadSongs() {
     try {
@@ -280,7 +276,7 @@ async function schedulePlayback() {
         let beat = 0;
 
         notes.forEach(n => {
-            // --- This section should normalize time & tempo ---
+            // --- This section should normalize time & tempo to seconds ---
             const durBeats = 4 / n.duration;
             const durSec = durBeats * (60 / globalTempo);
             const noteTime = startTime + beat * (60 / globalTempo);
