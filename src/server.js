@@ -11,6 +11,9 @@ const __dirname = path.dirname(__filename);
 const server = express();
 const PORT = 3000;
 
+/** CORS (Cross-Origin Resource Sharing)
+ *  Allows transmitting of HTTP headers, it determines whether browsers block frontend JavaScript code from accessing responses for cross-origin requests.
+ */
 server.use(cors());
 server.use(express.json());
 server.use(express.static(path.join(__dirname, "../public")));
