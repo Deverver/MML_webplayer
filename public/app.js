@@ -11,11 +11,14 @@ const melodyInstSelect = document.getElementById("melody-instrument");
 const harmony1InstSelect = document.getElementById("harmony1-instrument");
 const harmony2InstSelect = document.getElementById("harmony2-instrument");
 
-// --- Audio Context ---
-let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-let masterGain = audioCtx.createGain();
-masterGain.gain.value = volumeSlider.value / 100;
+// --- Audio Context + Master Volume ---
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+const masterGain = audioCtx.createGain();
 masterGain.connect(audioCtx.destination);
+// start at 50%
+const initialVal = volumeSlider.value / 100;
+masterGain.gain.value = Math.pow(initialVal, 2.5);
+
 
 // --- State ---
 let currentSong = null;
@@ -85,9 +88,6 @@ function parseMML(mml) {
     return {notes, tempo};
 }
 
-function noteLengthToSeconds(length, tempo) {
-    return (4 / length) * (60 / tempo);
-}
 
 // --- Load Songs ---
 async function loadSongs() {
@@ -116,7 +116,13 @@ async function loadSongs() {
 
 // --- Preload Instrument ---
 async function preloadInstrument(name) {
-    return await Soundfont.instrument(audioCtx, name, {gain: 1});
+    // Update: tried lower gain val (0.5) to prevent sound saturation in the compressors & masterGain
+    // initial gain at 1 is fine for now as adjusting this value makes other controls harder to fine-tune
+    // Major fix: setting destination to masterGain forces output directly into "context chain"
+    return await Soundfont.instrument(audioCtx, name, {
+        gain: 1,
+        destination: masterGain
+    });
 }
 
 // --- Stop Playback ---
@@ -124,20 +130,32 @@ function stopPlayback() {
     if (!playing) return;
     playing = false;
     scheduledNotes.forEach(n => {
-        try {
-            n.node.stop();
-        } catch {
-        }
+        try { n.node.stop(); } catch {}
+        if (n.noteGain) n.noteGain.disconnect();
     });
     scheduledNotes = [];
     console.log("⏹️ Playback stopped");
+
+    // -- Track cleanup --
+    if (instruments && Object.keys(instruments).length) {
+        Object.values(instruments).forEach(inst => {
+            if (inst.output) inst.output.disconnect();
+        });
+    }
 }
 
-// --- Volume Slider (True Mute + Realtime Volume) ---
+// --- Volume Slider (smooth ramp) ---
+// Update: volume controls work correctly after masterGain got routed correctly.
+// Changed the slider values from being linear to exponential
+// Issue: quick adjustments to the volume control still create audio "pops" even with a linearRamp
+// Fix: not found
+// Info: logarithmic math at 1.8 makes the volume about 1.6% when slider is at 10%, curve would be too aggressive
 volumeSlider.addEventListener("input", () => {
-    const sliderGain = volumeSlider.value / 100;
+    const linearVal = volumeSlider.value / 100;
+    const perceptualGain = Math.pow(linearVal, 1.2); // limit range between 1 & 1.8
+
     masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
-    masterGain.gain.linearRampToValueAtTime(sliderGain, audioCtx.currentTime + 0.05);
+    masterGain.gain.linearRampToValueAtTime(perceptualGain, audioCtx.currentTime + 0.05);
 });
 
 // --- Dropdown Change ---
@@ -193,11 +211,14 @@ async function schedulePlayback() {
         track.trackGain = audioCtx.createGain();
         track.trackGain.gain.value = trackScale;
 
-        // Optional: mild compression
+        // -- Compressor --
+        // After lowering the initial gain the compressor now needs to less aggressive
+        // Changed values from [-3, 20, 4], this gives more control to the masterGain
         const comp = audioCtx.createDynamicsCompressor();
-        comp.threshold.setValueAtTime(-3, audioCtx.currentTime);
-        comp.knee.setValueAtTime(20, audioCtx.currentTime);
-        comp.ratio.setValueAtTime(4, audioCtx.currentTime);
+        comp.threshold.setValueAtTime(-12, audioCtx.currentTime);
+        comp.knee.setValueAtTime(24, audioCtx.currentTime);
+        comp.ratio.setValueAtTime(2, audioCtx.currentTime);
+
         comp.attack.setValueAtTime(0.01, audioCtx.currentTime);
         comp.release.setValueAtTime(0.25, audioCtx.currentTime);
 
@@ -223,13 +244,13 @@ async function schedulePlayback() {
 
             if (n.note) {
                 const noteGain = audioCtx.createGain();
-                const volGain = n.volume / 15;
+                const volGain = n.volume / 15; // This respects the mml v0-v15 sound volume
                 noteGain.gain.value = volGain;
 
-                // connect the note’s gain to the track gain
+                // connect the individual note’s gain to the track gain
                 noteGain.connect(track.trackGain);
 
-                // 🔥 FIX: direct Soundfont to output into noteGain
+                // FIX: direct Soundfont to output into noteGain
                 const node = track.inst.play(n.note, noteTime, { duration: durSec, destination: noteGain });
 
                 scheduledNotes.push({ node, noteGain, mmlVol: volGain });
