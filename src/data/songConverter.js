@@ -10,7 +10,7 @@ import path from "path";
 const inputDir = path.resolve("./txt_songs");
 const outputFile = path.resolve("./songs.json");
 
-// In case no folder are present.
+// --- In case no folder are present ---
 if (!fs.existsSync(inputDir)) {
     fs.mkdirSync(inputDir, {recursive: true});
     console.log(`Created folder: ${inputDir}`);
@@ -18,7 +18,7 @@ if (!fs.existsSync(inputDir)) {
     process.exit(0);
 }
 
-// Parser for the .txt file data
+// --- Parser for the .txt file data ---
 function parseSongText(content) {
     const lines = content.split("\n").map(line => line.trim()).filter(Boolean);
     const song = {};

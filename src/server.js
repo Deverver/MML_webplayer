@@ -11,17 +11,17 @@ const __dirname = path.dirname(__filename);
 const server = express();
 const PORT = 3000;
 
+/** CORS (Cross-Origin Resource Sharing)
+ *  Allows transmitting of HTTP headers, it determines whether browsers block frontend JavaScript code from accessing responses for cross-origin requests.
+ */
 server.use(cors());
 server.use(express.json());
 server.use(express.static(path.join(__dirname, "../public")));
 server.use(logger);
 
-
 const songsFile = path.resolve(__dirname, "./data/songs.json");
 
-/**
- * Helper: Filter valid songs
- */
+// --- Filter valid songs into categories (Helper) ---
 function getFilteredSongs() {
     const allSongs = JSON.parse(fs.readFileSync(songsFile, "utf-8"));
 
@@ -48,13 +48,13 @@ function getFilteredSongs() {
     return { melodyOnly, melodyPlusHarmony, fullSongs };
 }
 
-// Send categorized songs
+// --- Send categorized songs ---
 server.get("/songs", (req, res) => {
     const categorized = getFilteredSongs();
     res.json(categorized);
 });
 
-// Individual song route
+// --- Individual song route ---
 server.get("/songs/:index", (req, res) => {
     const allSongs = JSON.parse(fs.readFileSync(songsFile, "utf-8"));
     const song = allSongs[req.params.index];
