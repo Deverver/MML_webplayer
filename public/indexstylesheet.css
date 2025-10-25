@@ -1,0 +1,163 @@
+body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(to bottom right, #d4d4d4, #b0b0b0);
+    color: #111;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
+
+h1 {
+    background: linear-gradient(to bottom, #f4f4f4, #c8c8c8);
+    border: 2px solid #888;
+    border-radius: 6px;
+    padding: 10px 20px;
+    box-shadow: inset 1px 1px 2px #fff, inset -1px -1px 3px rgba(0, 0, 0, 0.3);
+    text-shadow: 1px 1px #fff;
+    margin-bottom: 20px;
+}
+
+/* General Panels */
+.panel {
+    background: linear-gradient(to bottom right, #eeeeee, #cccccc);
+    border: 2px solid #999;
+    border-radius: 8px;
+    box-shadow: inset 1px 1px 0 #fff, inset -2px -2px 3px rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    width: 800px;
+    margin-bottom: 20px;
+}
+
+.panel h2 {
+    margin-top: 0;
+    font-size: 1.1em;
+    background: linear-gradient(to bottom, #e8e8e8, #d0d0d0);
+    border: 1px solid #999;
+    border-radius: 4px;
+    padding: 6px 8px;
+    display: inline-block;
+    box-shadow: inset 1px 1px 0 #fff;
+}
+
+/* Clamp long song titles */
+select {
+    width: 100%;
+    padding: 4px;
+    border: 1px solid #888;
+    border-radius: 4px;
+    background: linear-gradient(to bottom, #fff, #e4e4e4);
+    box-shadow: inset 1px 1px 0 #fff;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+label {
+    display: block;
+    margin-top: 6px;
+    font-size: 0.9em;
+    color: #222;
+}
+
+/* Song Selection Grid */
+.song-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.song-box {
+    background: linear-gradient(to bottom right, #f0f0f0, #cfcfcf);
+    border: 2px solid #999;
+    border-radius: 6px;
+    padding: 10px;
+    box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.song-box h3 {
+    margin-top: 0;
+    background: linear-gradient(to bottom, #e8e8e8, #d0d0d0);
+    border: 1px solid #999;
+    border-radius: 4px;
+    padding: 4px 6px;
+    font-size: 0.9em;
+}
+
+/* Track Controls */
+.track-controls {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.track-box {
+    flex: 1;
+    min-width: 230px;
+    background: linear-gradient(to bottom right, #f0f0f0, #cfcfcf);
+    border: 2px solid #999;
+    border-radius: 6px;
+    padding: 10px;
+    box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.track-box h3 {
+    margin-top: 0;
+    font-size: 0.9em;
+    background: linear-gradient(to bottom, #e8e8e8, #d0d0d0);
+    border: 1px solid #999;
+    border-radius: 4px;
+    padding: 4px 6px;
+}
+
+/* Buttons + Volume */
+.controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+button {
+    background: linear-gradient(to bottom, #fafafa, #d0d0d0);
+    border: 2px solid #888;
+    border-radius: 4px;
+    padding: 5px 10px;
+    margin-right: 6px;
+    font-size: 0.95em;
+    cursor: pointer;
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+button:hover {
+    background: linear-gradient(to bottom, #fff, #cfcfcf);
+}
+
+#volume {
+    width: 150px;
+    vertical-align: middle;
+}
+
+/* Visualizer */
+.visualizer-panel {
+    background: linear-gradient(to bottom right, #eaeaea, #cfcfcf);
+    border: 2px solid #999;
+    border-radius: 6px;
+    box-shadow: inset 1px 1px 3px #fff, inset -1px -1px 3px rgba(0, 0, 0, 0.3);
+    padding: 10px;
+    width: 800px;
+}
+
+canvas#vu-meter {
+    background: #111;
+    border: 1px solid #555;
+    display: block;
+    margin: 10px auto;
+    width: 100%;
+    height: 80px;
+}
