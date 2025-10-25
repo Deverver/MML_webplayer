@@ -88,5 +88,14 @@
     "melody": "l64c&c&c&c&c&c&c&c&c&c&c&c&c&c&c&c&c&c&c&c&c&c&c&c&c&c&c&c&c&c&c&c&c&c&c&c&c&c&c&c&c&c&c&c&c&c&c&cr4t185v15o2b4l8<bb>b<bbb>bb<bb>b<bbb>bb<bb>b<bbo3drerf+ra4.g4ggggrc1&cl16<ccccb+agfd8gc8fg8b4l8<bbb>bc-b4<bbbb>bc-g4gg<g>gg<g>g4gg<g>ggga4a16a16a<a>aa<a>a4a16a16<a>aa<a>a<b4b>b<bb>b<bb>f+abf+ed4<b4b>bc-b<bb>b4<b16b16bbbb>bg4g16g16bgggbg4g16g16bgggga4a16a16<a>aaa<a>a4a16a16<a>aaf+ab4b16b16c-bbc-b>e<c-dd+eff+abl4.o6dc+<abl4f+eae8eaf+2&f+8l8ef+af+b2bl4>c+dc+def+l8<f+f+f+f+f+f+f+r4.o2f+16f+16>ddc+c+<d4>d<d>dl16dd<d8>e4<eel8>e<e4e>eeo1bb16b16>b<bb>b<bb>b<bb>bba4g4gbggbga4a16a16aa4aaf+<bb>b<bb>b<bb>b<b16b16>bc-b4f+e4e16e16>e<ee>e<ef+4f+16f+16>f+<f+f+>f+<f+16f+16f+bbbba+a+a+a+aaaag+g+g+g+gg16g16bggbg<a4aar4>a16a16>c+<a<bb>b<bb>bc-dbaf+fedc+<a>b<bbo3d<dd>e<ee>f+<f+f+>f+ab<baa>e<a",
     "harmony1": "r1<f+l8f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+f+rgrbr>d4.<b4bbbbre1r1rv14>f+2f+ede2redc+d2rdc+<a>c+4d<b4.b>c+d4c+de4def+4ef+arbrf+2.f+gf+2rb>def+2rf+ede2redc+d2rdc+<a>c+4d<b4.b>c+d4c+de4def+4ef+a4>c+rc+4d<b2.r2rf+af+l4.rdc+<ba4g4r4f+a>c+<b4ar>dc+de4g4l8rddddddc+r2c-c+def+2f+ede4dc+d4c+<f+4>c+4d<b2.r4.b>c+def+2f+eda4gf+e4d4c+c+4d<b2.r4.b>",
     "harmony2": "l1rv13o2f+f+f+r8e4f+4a4.g2.r8grr8>b2.r8f+gdedbrb>f+d<baf+brr8v14<g&gf+&f+g&gf+2l8f+f+f+f+r1o5d2l4d<a8>c+<b8a2da.f+2.r.f+2>d2d<a8>edc+<a.a.f+2r8c-2f+2>d2dc-8c+<ba.d>c+d8e.f+8d2r2r8f+.e2c+c+r2r8c+d8"
+  },
+  {
+    "title": "Touhou: Bad Apple!!",
+    "composer": "Demaesia",
+    "rank": "F",
+    "instrument": "Lute",
+    "melody": "d#8f8f#8g#8a#o5d#8c#8o4a#d#a#8g#8f#8f8d#8f8f#8g#8a#g#8f#8f8d#8f8f#8f8d#8d8f8d#8f8f#8g#8a#o5d#8c#8o4a#d#a#8g#8f#8f8d#8f8f#8g#8a#g#8f#8ff#g#a#d#8f8f#8g#8a#o5d#8c#8o4a#d#a#8g#8f#8f8d#8f8f#8g#8a#g#8f#8f8d#8f8f#8f8d#8d8f8d#8f8f#8g#8a#o5d#8c#8o4a#d#a#8g#8f#8f8d#8f8f#8g#8a#g#8f#8ff#g#a#",
+    "harmony1": "o5c#8d#8o4a#8g#8a#g#8a#8o5c#8d#8o4a#8g#8a#g#8a#8g#8f#8f8c#8d#c#8d#8f8f#8g#8a#8d#g#8a#8o5c#8d#8o4a#8g#8a#g#8a#8o5c#8d#8o4a#8g#8a#o5d#8f8f#8f8d#8c#8o4a#g#8a#8g#8f#8f8c#8d#",
+    "harmony2": ""
   }
 ]

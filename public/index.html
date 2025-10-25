@@ -3,45 +3,276 @@
 <head>
     <meta charset="UTF-8"/>
     <title>MML Player</title>
+    <style>
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to bottom right, #d4d4d4, #b0b0b0);
+            color: #111;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            background: linear-gradient(to bottom, #f4f4f4, #c8c8c8);
+            border: 2px solid #888;
+            border-radius: 6px;
+            padding: 10px 20px;
+            box-shadow: inset 1px 1px 2px #fff, inset -1px -1px 3px rgba(0, 0, 0, 0.3);
+            text-shadow: 1px 1px #fff;
+            margin-bottom: 20px;
+        }
+
+        /* General Panels */
+        .panel {
+            background: linear-gradient(to bottom right, #eeeeee, #cccccc);
+            border: 2px solid #999;
+            border-radius: 8px;
+            box-shadow: inset 1px 1px 0 #fff, inset -2px -2px 3px rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            width: 800px;
+            margin-bottom: 20px;
+        }
+
+        .panel h2 {
+            margin-top: 0;
+            font-size: 1.1em;
+            background: linear-gradient(to bottom, #e8e8e8, #d0d0d0);
+            border: 1px solid #999;
+            border-radius: 4px;
+            padding: 6px 8px;
+            display: inline-block;
+            box-shadow: inset 1px 1px 0 #fff;
+        }
+
+        /* Clamp long song titles */
+        select {
+            width: 100%;
+            padding: 4px;
+            border: 1px solid #888;
+            border-radius: 4px;
+            background: linear-gradient(to bottom, #fff, #e4e4e4);
+            box-shadow: inset 1px 1px 0 #fff;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        label {
+            display: block;
+            margin-top: 6px;
+            font-size: 0.9em;
+            color: #222;
+        }
+
+        /* Song Selection Grid */
+        .song-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .song-box {
+            background: linear-gradient(to bottom right, #f0f0f0, #cfcfcf);
+            border: 2px solid #999;
+            border-radius: 6px;
+            padding: 10px;
+            box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .song-box h3 {
+            margin-top: 0;
+            background: linear-gradient(to bottom, #e8e8e8, #d0d0d0);
+            border: 1px solid #999;
+            border-radius: 4px;
+            padding: 4px 6px;
+            font-size: 0.9em;
+        }
+
+        /* Track Controls */
+        .track-controls {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .track-box {
+            flex: 1;
+            min-width: 230px;
+            background: linear-gradient(to bottom right, #f0f0f0, #cfcfcf);
+            border: 2px solid #999;
+            border-radius: 6px;
+            padding: 10px;
+            box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .track-box h3 {
+            margin-top: 0;
+            font-size: 0.9em;
+            background: linear-gradient(to bottom, #e8e8e8, #d0d0d0);
+            border: 1px solid #999;
+            border-radius: 4px;
+            padding: 4px 6px;
+        }
+
+        /* Buttons + Volume */
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: linear-gradient(to bottom, #fafafa, #d0d0d0);
+            border: 2px solid #888;
+            border-radius: 4px;
+            padding: 5px 10px;
+            margin-right: 6px;
+            font-size: 0.95em;
+            cursor: pointer;
+            box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        button:hover {
+            background: linear-gradient(to bottom, #fff, #cfcfcf);
+        }
+
+        #volume {
+            width: 150px;
+            vertical-align: middle;
+        }
+
+        /* Visualizer */
+        .visualizer-panel {
+            background: linear-gradient(to bottom right, #eaeaea, #cfcfcf);
+            border: 2px solid #999;
+            border-radius: 6px;
+            box-shadow: inset 1px 1px 3px #fff, inset -1px -1px 3px rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            width: 800px;
+        }
+
+        canvas#vu-meter {
+            background: #111;
+            border: 1px solid #555;
+            display: block;
+            margin: 10px auto;
+            width: 100%;
+            height: 80px;
+        }
+    </style>
 </head>
-<body class="p-4">
+<body>
 <h1>MML Song Player</h1>
 
-<!-- Song Select Panel-->
-<div>
-    <h2>Melody Only</h2>
-    <select id="melody-only"></select>
-
-    <h2>Melody + Harmony</h2>
-    <select id="melody-plus-harmony"></select>
-
-    <h2>Full Songs</h2>
-    <select id="full-songs"></select>
+<!-- Song Selection -->
+<div class="panel">
+    <h2>🎵 Song Selection</h2>
+    <div class="song-grid">
+        <div class="song-box">
+            <h3>Melody Only</h3>
+            <select id="melody-only"></select>
+        </div>
+        <div class="song-box">
+            <h3>Melody + Harmony</h3>
+            <select id="melody-plus-harmony"></select>
+        </div>
+        <div class="song-box">
+            <h3>Full Songs</h3>
+            <select id="full-songs"></select>
+        </div>
+    </div>
 </div>
 
+<!-- TRACK CONTROLS -->
+<div class="panel">
+    <h2>🎚️ Track Instruments</h2>
+    <div class="track-controls">
+        <div class="track-box">
+            <h3>Track 1: Melody</h3>
+            <select id="melody-instrument"></select>
+        </div>
+        <div class="track-box">
+            <h3>Track 2: Harmony 1</h3>
+            <select id="harmony1-instrument"></select>
+        </div>
+        <div class="track-box">
+            <h3>Track 3: Harmony 2</h3>
+            <select id="harmony2-instrument"></select>
+        </div>
+    </div>
+</div>
 
-<!-- Controls Panel-->
-<div>
-    <div style="margin-top: 10px;">
+<!-- PLAYBACK -->
+<div class="panel">
+    <h2>⏯️ Playback Controls</h2>
+    <div class="controls">
         <button id="play-btn">▶️ Play</button>
         <button id="stop-btn">⏹️ Stop</button>
-    </div>
 
-
-    <div style="margin-top: 10px;">
         <label for="volume">🔊 Volume</label>
         <input type="range" id="volume" min="0" max="100" value="50"/>
     </div>
+</div>
 
+<!-- MML Editor -->
+<div class="panel">
+    <h2>🧩 MML Editor (Experimental)</h2>
 
-    <label>Instrument for track 1 </label>
-    <select id="melody-instrument"></select><br>
+    <p style="margin-top: 0.5em; font-size: 0.9em; color: #333;">
+        Create or modify MML data for each track below. You can later test playback independently or save as a new song.
+    </p>
 
-    <label>Instrument for track 2 </label>
-    <select id="harmony1-instrument"></select><br>
+    <div class="editor-container">
+        <div class="editor-track">
+            <h3>Track 1 – Melody</h3>
+            <textarea id="editor-track1" placeholder="Enter MML for melody (e.g. t120 l8 o4 cdefgab)" spellcheck="false"></textarea>
+        </div>
+        <div class="editor-track">
+            <h3>Track 2 – Harmony 1</h3>
+            <textarea id="editor-track2" placeholder="Enter MML for harmony (optional)" spellcheck="false"></textarea>
+        </div>
+        <div class="editor-track">
+            <h3>Track 3 – Harmony 2</h3>
+            <textarea id="editor-track3" placeholder="Enter MML for harmony (optional)" spellcheck="false"></textarea>
+        </div>
+    </div>
 
-    <label>Instrument for track 3 </label>
-    <select id="harmony2-instrument"></select>
+    <div class="editor-controls">
+        <button id="preview-editor">▶️ Preview</button>
+        <button id="stop-editor">⏹️ Stop</button>
+        <button id="clear-editor">🧹 Clear</button>
+    </div>
+</div>
+
+<!-- MML Note Notation -->
+<div class="panel">
+    <h2>📖 Basic MML Reference</h2>
+    <div class="reference-grid">
+        <div>
+            <h4>Notes</h4>
+            <p>C D E F G A B<br>Use + or # for sharps, - for flats (e.g. C+, D-)</p>
+        </div>
+        <div>
+            <h4>Length</h4>
+            <p>l4 = quarter note<br>l8 = eighth note<br>Use "." to extend (e.g. l8.)</p>
+        </div>
+        <div>
+            <h4>Volume / Tempo</h4>
+            <p>v8 = medium volume<br>t120 = tempo 120 BPM</p>
+        </div>
+        <div>
+            <h4>Octave / Tie</h4>
+            <p>o4 = octave 4<br>& = tie notes<br>&gt; / &lt; = octave up/down</p>
+        </div>
+    </div>
 </div>
 
 

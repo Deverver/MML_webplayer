@@ -1,17 +1,22 @@
 // --- DOM Elements ---
+// --- Song Player Area ---
+// -- Song Elements --
 const melodyOnlySelect = document.getElementById("melody-only");
 const melodyPlusSelect = document.getElementById("melody-plus-harmony");
 const fullSongsSelect = document.getElementById("full-songs");
 
-const playBtn = document.getElementById("play-btn");
-const stopBtn = document.getElementById("stop-btn");
-const volumeSlider = document.getElementById("volume");
-
+// -- Song Instruments
 const melodyInstSelect = document.getElementById("melody-instrument");
 const harmony1InstSelect = document.getElementById("harmony1-instrument");
 const harmony2InstSelect = document.getElementById("harmony2-instrument");
 
+// -- Song Controls --
+const playBtn = document.getElementById("play-btn");
+const stopBtn = document.getElementById("stop-btn");
+const volumeSlider = document.getElementById("volume");
+
 // --- Audio Context + Master Volume ---
+// This controls all other audio outputs
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 const masterGain = audioCtx.createGain();
 masterGain.connect(audioCtx.destination);
@@ -19,7 +24,7 @@ masterGain.connect(audioCtx.destination);
 const initialVal = volumeSlider.value / 100;
 masterGain.gain.value = Math.pow(initialVal, 2.5);
 
-// --- State ---
+// --- Song Player State ---
 let currentSong = null;
 let instruments = {};
 let scheduledNotes = [];
@@ -80,12 +85,12 @@ function parseMML(mml) {
 
     if (!mml || typeof mml !== "string") return {notes, tempo};
 
-    // Tokenizer: supports t#, v#, l#, o#, > < & rests r#, dotted .,
-    // and note tokens like a, a+, a#, a- optionally followed by length digits and optional dot
+    // -- Expanded Tokenizer --
+    // Supports t#, v#, l#, o#, > < & rests r#, dotted ., and note tokens like a, a+, a#, a-
     const tokenRegex = /(t\d+|v\d+|l\d+|o\d+|[<>]|&|r\d*\.?|[a-gA-G][\+#-]?\d*\.?)/g;
     const tokens = mml.match(tokenRegex) || [];
 
-    // Helper to parse a single note token (e.g., "c+8.", "d4", "e.")
+    // -- Single note corrective parser (helper) --
     function parseNoteToken(tok) {
         // tok examples: "c", "c+", "c+8", "c+8."
         const m = tok.match(/^([a-gA-G])([\+#-]?)(\d+)?(\.)?$/);
@@ -96,10 +101,12 @@ function parseMML(mml) {
         const dotted = !!m[4];
         // normalize accidentals: treat '+' as '#'
         const acc = accidental === '+' ? '#' : accidental;
+
         return {letter, acc, len, dotted};
     }
 
-    // iterate tokens with ability to look ahead (for ties)
+    // Iterate over tokens with ability to look ahead for "ties" or "long notes"
+    // This is entire rework is want i wanted to avoid
     for (let i = 0; i < tokens.length; i++) {
         const token = tokens[i];
 
@@ -129,7 +136,7 @@ function parseMML(mml) {
             continue;
         }
 
-        // Rests: r, r4, r8. etc. (store duration in beats)
+        // Rests: r, r4, r8. etc. REWORK: Everything has to be by Beat now.
         if (token.startsWith("r")) {
             const m = token.match(/^r(\d+)?(\.)?$/);
             const len = m && m[1] ? parseInt(m[1], 10) : defaultLen;
@@ -140,15 +147,15 @@ function parseMML(mml) {
             continue;
         }
 
-        // Notes (maybe tied)
-        const noteParsed = parseNoteToken(token);
-        if (noteParsed) {
+        // Notes Re: now includes tied notes
+        const parsedNote = parseNoteToken(token);
+        if (parsedNote) {
             // compute beats for first note
-            let totalBeats = 4 / noteParsed.len;
-            if (noteParsed.dotted) totalBeats *= 1.5;
+            let totalBeats = 4 / parsedNote.len;
+            if (parsedNote.dotted) totalBeats *= 1.5;
 
             // build pitch (letter + accidental + octave)
-            const pitch = noteParsed.letter + (noteParsed.acc || "") + octave;
+            const pitch = parsedNote.letter + (parsedNote.acc || "") + octave;
 
             // look ahead for ties: token sequence is: note & note & note ...
             // we only merge ties when subsequent tied note has the same letter+accidental
@@ -157,21 +164,20 @@ function parseMML(mml) {
                 const nextTok = tokens[lookIndex + 1];
                 const nextNoteParsed = parseNoteToken(nextTok);
                 if (!nextNoteParsed) break;
-                if (nextNoteParsed.letter.toUpperCase() === noteParsed.letter.toUpperCase()
-                    && ((nextNoteParsed.acc || "") === (noteParsed.acc || ""))) {
-                    // add its beats
+                if (nextNoteParsed.letter.toUpperCase() === parsedNote.letter.toUpperCase()
+                    && ((nextNoteParsed.acc || "") === (parsedNote.acc || ""))) {
+                    // Add beats up to preserve note time
                     let addBeats = 4 / nextNoteParsed.len;
                     if (nextNoteParsed.dotted) addBeats *= 1.5;
                     totalBeats += addBeats;
-                    // consume the & and the next note token
+                    // Consume the & and the next note token
                     lookIndex += 2;
                 } else {
-                    // not same pitch — stop tie chain
+                    // If notes are not the same pitch — stop tie chain
                     break;
                 }
             }
-
-            // advance the main index to the last consumed token in tie chain
+            // Advance index to last consumed token
             i = lookIndex - 1;
 
             notes.push({
@@ -255,7 +261,7 @@ function stopPlayback() {
 // --- Volume Slider (smooth ramp) ---
 volumeSlider.addEventListener("input", () => {
     const linearVal = volumeSlider.value / 100;
-    const perceptualGain = Math.pow(linearVal, 1.2); // user-tuned
+    const perceptualGain = Math.pow(linearVal, 1.2); // Keep between 1 & 1.8
     masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
     masterGain.gain.linearRampToValueAtTime(perceptualGain, audioCtx.currentTime + 0.05);
 });
@@ -292,14 +298,14 @@ async function schedulePlayback() {
         {data: currentSong.melody, inst: instruments.melody},
         {data: currentSong.harmony1, inst: instruments.harmony1},
         {data: currentSong.harmony2, inst: instruments.harmony2}
-    ].filter(t => t.data && t.inst);
+    ].filter(track => track.data && track.inst);
 
     scheduledNotes = [];
 
     // --- Determine global tempo ---
     let globalTempo = 120;
-    for (const t of tracks) {
-        const parsed = parseMML(t.data);
+    for (const track of tracks) {
+        const parsed = parseMML(track.data);
         if (parsed && parsed.tempo) {
             globalTempo = parsed.tempo;
             break;
@@ -321,6 +327,7 @@ async function schedulePlayback() {
         comp.attack.setValueAtTime(0.01, audioCtx.currentTime);
         comp.release.setValueAtTime(0.25, audioCtx.currentTime);
 
+        // Intended output chain:
         // Instrument → trackGain → compressor → masterGain → destination
         track.trackGain.connect(comp);
         comp.connect(masterGain);
@@ -339,19 +346,18 @@ async function schedulePlayback() {
         let timeSec = startTime; // absolute time for this track's next note
 
         for (const n of notes) {
-            // n.duration is in beats (as produced by parseMML)
+            // n.duration is in beats (from parseMML)
             const durSec = n.duration * beatSec;
 
             if (n.note) {
-                // connect the individual note’s gain to the track gain
+                // Connect each individual note’s gain to the track gain
                 const noteGain = audioCtx.createGain();
                 const volGain = (n.volume || 15) / 15; // This respects the mml v0-v15 sound volume
                 noteGain.gain.value = volGain;
                 noteGain.connect(track.trackGain);
 
-                // schedule note: timeSec is absolute audioCtx time in seconds
+                // Schedule note: timeSec is absolute audioCtx time in seconds
                 const node = track.inst.play(n.note, timeSec, {duration: durSec, destination: noteGain});
-
                 scheduledNotes.push({node, noteGain, mmlVol: volGain});
 
                 // -- schedule cleanup --
@@ -382,6 +388,145 @@ async function loadInstruments() {
     populateInstrumentSelect(harmony1InstSelect);
     populateInstrumentSelect(harmony2InstSelect);
 }
+
+// EXPERIMENTAL SECTION CONTAINS LARGE AMOUNTS OF DUPLICATED CODE, Routing a service for this is likely needed
+
+
+// --- MML Editor Area ---
+// -- Editor DOM --
+const editorInputs = [
+    document.getElementById("editor-track1"),
+    document.getElementById("editor-track2"),
+    document.getElementById("editor-track3")
+];
+
+// -- Editor Controls --
+const previewBtn = document.getElementById("preview-editor");
+const stopEditorBtn = document.getElementById("stop-editor");
+const clearEditorBtn = document.getElementById("clear-editor");
+
+// -- Editor State
+let editorInstruments = {};
+let editorScheduledNotes = [];
+let editorPlaying = false;
+
+async function scheduleEditorPlayback() {
+    if (editorPlaying) stopEditorPlayback();
+    editorPlaying = true;
+
+    if (audioCtx.state === "suspended") await audioCtx.resume();
+
+    // Collect MML from inputs
+    const mmlTracks = editorInputs.map(t => t.value.trim());
+    if (mmlTracks.every(track => !track)) {
+        alert("Enter some MML first!");
+        return;
+    }
+
+    // Preload instruments (re-use user selections)
+    editorInstruments.melody = await preloadInstrument(melodyInstSelect.value);
+    editorInstruments.harmony1 = await preloadInstrument(harmony1InstSelect.value);
+    editorInstruments.harmony2 = await preloadInstrument(harmony2InstSelect.value);
+
+    const tracks = [
+        {data: mmlTracks[0], inst: editorInstruments.melody},
+        {data: mmlTracks[1], inst: editorInstruments.harmony1},
+        {data: mmlTracks[2], inst: editorInstruments.harmony2}
+    ].filter(t => t.data);
+
+    editorScheduledNotes = [];
+
+    // Determine tempo
+    let globalTempo = 120;
+    for (const track of tracks) {
+        const {tempo} = parseMML(track.data);
+        if (tempo) {
+            globalTempo = tempo;
+            break;
+        }
+    }
+
+    // Create per-track gain & compressor
+    const trackScale = 0.9 / tracks.length;
+    tracks.forEach(track => {
+        track.trackGain = audioCtx.createGain();
+        track.trackGain.gain.value = trackScale;
+
+        const comp = audioCtx.createDynamicsCompressor();
+        comp.threshold.setValueAtTime(-12, audioCtx.currentTime);
+        comp.knee.setValueAtTime(24, audioCtx.currentTime);
+        comp.ratio.setValueAtTime(2, audioCtx.currentTime);
+        comp.attack.setValueAtTime(0.01, audioCtx.currentTime);
+        comp.release.setValueAtTime(0.25, audioCtx.currentTime);
+
+        track.trackGain.connect(comp);
+        comp.connect(masterGain);
+    });
+
+    const startTime = audioCtx.currentTime;
+    const beatSec = 60 / globalTempo;
+
+    // Schedule notes
+    tracks.forEach(track => {
+        const {notes} = parseMML(track.data);
+        let timeSec = startTime;
+
+        for (const n of notes) {
+            const durSec = n.duration * beatSec;
+            if (n.note) {
+                const noteGain = audioCtx.createGain();
+                noteGain.gain.value = (n.volume || 15) / 15;
+                noteGain.connect(track.trackGain);
+
+                const node = track.inst.play(n.note, timeSec, {
+                    duration: durSec,
+                    destination: noteGain
+                });
+
+                editorScheduledNotes.push({node, noteGain});
+
+                // Cleanup
+                setTimeout(() => {
+                    try {
+                        noteGain.disconnect();
+                    } catch {
+                    }
+                }, (durSec + 0.3) * 1000);
+            }
+
+            timeSec += durSec;
+        }
+    });
+
+    console.log(`Editor preview started @ ${globalTempo} BPM`);
+}
+
+function stopEditorPlayback() {
+    if (!editorPlaying) return;
+    editorPlaying = false;
+    editorScheduledNotes.forEach(n => {
+        try {
+            n.node.stop();
+        } catch {
+        }
+        if (n.noteGain) n.noteGain.disconnect();
+    });
+    editorScheduledNotes = [];
+    console.log("Editor preview stopped");
+}
+
+function clearEditorFields() {
+    editorInputs.forEach(t => (t.value = ""));
+    console.log("Editor fields cleared");
+}
+
+// --- Bind Editor Buttons ---
+previewBtn.addEventListener("click", scheduleEditorPlayback);
+stopEditorBtn.addEventListener("click", stopEditorPlayback);
+clearEditorBtn.addEventListener("click", clearEditorFields);
+
+// EXPERIMENTAL SECTION END
+
 
 // --- Initialize Page ---
 async function renderPage() {
