@@ -218,6 +218,23 @@ async function loadSongs() {
     }
 }
 
+
+/* Some instruments fail to "fetch", don't know how to handle this as it is not an actual fetch request
+if it were then something like this could have been used
+fetch(url).then((response) => {
+  if (response.ok) {
+    return response.json();
+  }
+  throw new Error('Something went wrong'); // Or alert
+})
+.then((responseJson) => {
+  // Do something with the response
+})
+.catch((error) => {
+  console.log(error)
+});
+
+*/
 // --- Preload Instrument ---
 async function preloadInstrument(name) {
     return await Soundfont.instrument(audioCtx, name, {

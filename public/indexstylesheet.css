@@ -20,7 +20,7 @@ h1 {
     margin-bottom: 20px;
 }
 
-/* General Panels */
+/* General Panel Style */
 .panel {
     background: linear-gradient(to bottom right, #eeeeee, #cccccc);
     border: 2px solid #999;
@@ -42,7 +42,7 @@ h1 {
     box-shadow: inset 1px 1px 0 #fff;
 }
 
-/* Clamp long song titles */
+/* Clamp for long song titles */
 select {
     width: 100%;
     padding: 4px;
