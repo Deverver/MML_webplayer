@@ -32,6 +32,7 @@ let playing = false;
 
 // --- GM Instruments ---
 /*  The official 128 + Extra
+    soundfont-player v0.12.0 by danigb
     percussion/FX instruments are appended at the end of many Soundfont collections.
     breath_noise, seashore, bird_tweet, telephone_ring, helicopter, applause, gunshot. */
 const GM_INSTRUMENTS = [
