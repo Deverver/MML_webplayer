@@ -7,12 +7,12 @@
 </head>
 <body>
 
-
 <h1>MML Song Player</h1>
 
 <!-- Song Selection -->
 <div class="panel">
     <h2>🎵 Song Selection</h2>
+
     <div class="song-grid">
         <div class="song-box">
             <h3>Melody Only</h3>
@@ -27,10 +27,10 @@
             <select id="full-songs"></select>
         </div>
     </div>
-</div>
 
-<!-- TRACK CONTROLS -->
-<div class="panel">
+
+    <!-- TRACK CONTROLS -->
+    <br>
     <h2>🎚️ Track Instruments</h2>
     <div class="track-controls">
         <div class="track-box">
@@ -46,16 +46,16 @@
             <select id="harmony2-instrument"></select>
         </div>
     </div>
-</div>
 
-<!-- PLAYBACK -->
-<div class="panel">
+
+    <!-- PLAYBACK -->
+    <br>
     <h2>⏯️ Playback Controls</h2>
     <div class="controls">
         <button id="play-btn">▶️ Play</button>
         <button id="stop-btn">⏹️ Stop</button>
 
-        <label for="volume">🔊 Volume</label>
+        <label for="volume">🔊 Master Volume</label>
         <input type="range" id="volume" min="0" max="100" value="50"/>
     </div>
 </div>
@@ -65,13 +65,22 @@
     <h2>🧩 MML Editor (Experimental)</h2>
 
     <p style="margin-top: 0.5em; font-size: 0.9em; color: #333;">
-        Create or modify MML data for each track below. You can later test playback independently or save as a new song.
+        Create or modify MML data for each track below. You can later test playback independently or save as a new song.<br>
+        This uses the instruments that have been selected up above in the Track Instrument area.
     </p>
+
+    <div class="editor-controls">
+        <button id="preview-editor">▶️ Preview</button>
+        <button id="stop-editor">⏹️ Stop</button>
+        <button id="clear-editor">🧹 Clear</button>
+        <button id="save-editor">💾 save "N/A"</button>
+    </div>
 
     <div class="editor-container">
         <div class="editor-track">
             <h3>Track 1 – Melody</h3>
-            <textarea id="editor-track1" placeholder="Enter MML for melody (e.g. t120 l8 o4 cdefgab)" spellcheck="false"></textarea>
+            <textarea id="editor-track1" placeholder="Enter MML for melody (e.g. t120 l8 o4 cdefgab)"
+                      spellcheck="false"></textarea>
         </div>
         <div class="editor-track">
             <h3>Track 2 – Harmony 1</h3>
@@ -83,17 +92,23 @@
         </div>
     </div>
 
-    <div class="editor-controls">
-        <button id="preview-editor">▶️ Preview</button>
-        <button id="stop-editor">⏹️ Stop</button>
-        <button id="clear-editor">🧹 Clear</button>
-    </div>
+
 </div>
 
 <!-- MML Note Notation -->
 <div class="panel">
-    <h2>📖 Basic MML Reference</h2>
+    <h2>📖 Basic MML Legend</h2>
     <div class="reference-grid">
+        <div>
+            <h4>Tips for beginners</h4>
+            <p>Use one track first (melody only).<br>Play with tempo and octave. You’ll get a feel for how
+                music “moves”.<br>Try repeating patterns. & remember to experiment.<br> You can’t “break”
+                anything — just adjust letters and numbers.
+            </p>
+            <p>One small thing to be aware about, is that tempo has to be set in track 1 - the melody<br>
+                A standard template before your notes could look like this "t120 o4 l4 v12"</p>
+        </div>
+
         <div>
             <h4>Notes</h4>
             <p>C D E F G A B<br>Use + or # for sharps, - for flats (e.g. C+, D-)</p>
@@ -104,11 +119,12 @@
         </div>
         <div>
             <h4>Volume / Tempo</h4>
-            <p>v8 = medium volume<br>t120 = tempo 120 BPM</p>
+            <p> v0 = no volume<br>v8 = medium volume<br>v15 = max volume<br>t120 = tempo 120 BPM</p>
         </div>
         <div>
             <h4>Octave / Tie</h4>
-            <p>o4 = octave 4<br>& = tie notes<br>&gt; / &lt; = octave up/down</p>
+            <p> o3 = lower pitch<br>o4 = middle pitch <br>o5 = higher pitch<br> & = tie notes<br>&gt; / &lt; = octave
+                up/down</p>
         </div>
     </div>
 </div>

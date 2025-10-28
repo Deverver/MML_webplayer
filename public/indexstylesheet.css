@@ -42,6 +42,19 @@ h1 {
     box-shadow: inset 1px 1px 0 #fff;
 }
 
+.panel h4 {
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.panel p {
+    margin-top: 0;
+    padding-top: 0;
+
+}
+
 /* Clamp for long song titles */
 select {
     width: 100%;
@@ -123,6 +136,11 @@ label {
     flex-wrap: wrap;
 }
 
+.editor-track textarea{
+    width: 99%;
+    height: 42px;
+}
+
 button {
     background: linear-gradient(to bottom, #fafafa, #d0d0d0);
     border: 2px solid #888;
@@ -141,23 +159,4 @@ button:hover {
 #volume {
     width: 150px;
     vertical-align: middle;
-}
-
-/* Visualizer */
-.visualizer-panel {
-    background: linear-gradient(to bottom right, #eaeaea, #cfcfcf);
-    border: 2px solid #999;
-    border-radius: 6px;
-    box-shadow: inset 1px 1px 3px #fff, inset -1px -1px 3px rgba(0, 0, 0, 0.3);
-    padding: 10px;
-    width: 800px;
-}
-
-canvas#vu-meter {
-    background: #111;
-    border: 1px solid #555;
-    display: block;
-    margin: 10px auto;
-    width: 100%;
-    height: 80px;
 }

@@ -97,5 +97,23 @@
     "melody": "d#8f8f#8g#8a#o5d#8c#8o4a#d#a#8g#8f#8f8d#8f8f#8g#8a#g#8f#8f8d#8f8f#8f8d#8d8f8d#8f8f#8g#8a#o5d#8c#8o4a#d#a#8g#8f#8f8d#8f8f#8g#8a#g#8f#8ff#g#a#d#8f8f#8g#8a#o5d#8c#8o4a#d#a#8g#8f#8f8d#8f8f#8g#8a#g#8f#8f8d#8f8f#8f8d#8d8f8d#8f8f#8g#8a#o5d#8c#8o4a#d#a#8g#8f#8f8d#8f8f#8g#8a#g#8f#8ff#g#a#",
     "harmony1": "o5c#8d#8o4a#8g#8a#g#8a#8o5c#8d#8o4a#8g#8a#g#8a#8g#8f#8f8c#8d#c#8d#8f8f#8g#8a#8d#g#8a#8o5c#8d#8o4a#8g#8a#g#8a#8o5c#8d#8o4a#8g#8a#o5d#8f8f#8f8d#8c#8o4a#g#8a#8g#8f#8f8c#8d#",
     "harmony2": ""
+  },
+  {
+    "title": "Spectrum • Test Suite",
+    "composer": "ChatGPT",
+    "rank": "Test",
+    "instrument": "Acoustic Grand Piano",
+    "melody": "t110v14l8o4 cdefgab>c<b>c<bagfedc r2 o5 cdefgab>c<b>c<bagfedc r2 o6 cdefgab>c<b>c<bagfedc",
+    "harmony1": "t110v10l8o3 c2c2f2f2a2a2<d2>d2r2 o4 g2g2e2e2c2c2<g2>g2",
+    "harmony2": "t110v8l4o2 c<g>c<g>c<g>c<g> r4 f<c>f<c>f<c>f<c> r4 g<d>g<d>g<d>g<d> r4 c<g>c<g>c<g>c<g>"
+  },
+  {
+    "title": "Horizons in Three • Test Suite",
+    "composer": "ChatGPT",
+    "rank": "Test",
+    "instrument": "Acoustic Grand Piano",
+    "melody": "t95v14l8o4 c8d8e8f8 g8a8b8>c8 <b8a8g8f8 e4r4 d4r4 c4r4 o5 c8d8e8f8 g8a8b8>c8 <b8a8g8f8 e4r4 d4r4 c4r4 o6 g8a8b8c9 d8e8f8g8 >a8b8c9d9 <c9b9a9g9 f2r2 e2r2 d2r2",
+    "harmony1": "t95v10l8o3 c2e2g2e2 c2f2a2f2 d2g2b2g2 c2e2g2e2 r4r4 o4 d2f2a2f2 d2g2b2g2 r4r4",
+    "harmony2": "t95v8l4o2 c2r2c2r2 e2r2e2r2 g2r2g2r2 o1 c2r2c2r2 e2r2e2r2 g2r2g2r2 r4r4"
   }
 ]
