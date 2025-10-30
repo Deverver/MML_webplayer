@@ -102,7 +102,7 @@ function parseMML(mml) {
     }
 
     // Iterate over tokens with ability to look ahead for "ties" or "long notes"
-    // This is entire rework is want i wanted to avoid
+    // This is entire rework is want I wanted to avoid
     for (let i = 0; i < tokens.length; i++) {
         const token = tokens[i];
 
@@ -393,7 +393,7 @@ async function schedulePlayback() {
 }
 
 // --- Play / Stop Buttons ---
-playBtn.addEventListener("click", schedulePlayback);
+playBtn.addEventListener("click", await schedulePlayback);
 stopBtn.addEventListener("click", stopPlayback);
 
 async function loadInstruments() {
@@ -600,4 +600,4 @@ async function renderPage() {
 }
 
 // --- Start App ---
-renderPage();
+await renderPage();
