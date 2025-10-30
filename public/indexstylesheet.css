@@ -66,6 +66,7 @@ select {
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
+    cursor: pointer;
 }
 
 label {
@@ -76,7 +77,7 @@ label {
 }
 
 /* Song Selection Grid */
-.song-grid {
+.song-area {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     gap: 12px;
@@ -99,9 +100,25 @@ label {
     padding: 4px 6px;
     font-size: 0.9em;
 }
+/* styling for option elements */
+.song-box .song-option {}
+
+.song-box .song-option:active {
+    background-color: rgba(66, 58, 38, 0.85);
+    color: #f8f0e5;
+}
+
+.song-box .song-option:hover {
+    background-color: rgba(66, 58, 38, 0.1);
+}
+
+.song-box .song-option.hide {
+    display: none;
+}
+
 
 /* Track Controls */
-.track-controls {
+.instrument-area {
     display: flex;
     justify-content: space-between;
     gap: 12px;
@@ -128,7 +145,7 @@ label {
 }
 
 /* Buttons + Volume */
-.controls {
+.playback-controls {
     display: flex;
     align-items: center;
     gap: 15px;
@@ -136,7 +153,7 @@ label {
     flex-wrap: wrap;
 }
 
-.editor-track textarea{
+.editor-track textarea {
     width: 99%;
     height: 42px;
 }
@@ -156,7 +173,30 @@ button:hover {
     background: linear-gradient(to bottom, #fff, #cfcfcf);
 }
 
+.legend-btn{
+    background: linear-gradient(to bottom, #f0f0f0, #cfcfcf);
+    width: 25%;
+    padding-right: 5px;
+    padding-left: 5px;
+}
+
+.close-dialog {
+    position: absolute;
+    top: 10px;
+    right: 5px;
+    background: rgba(250, 80, 80, 0.4);
+    border: none;
+    font-weight: bold;
+    font-size: 24px;
+    cursor: pointer;
+}
+
 #volume {
     width: 150px;
     vertical-align: middle;
+    cursor: pointer;
 }
+
+
+
+

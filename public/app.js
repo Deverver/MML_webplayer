@@ -1,11 +1,10 @@
-// --- DOM Elements ---
 // --- Song Player Area ---
-// -- Song Elements --
+// -- Song Objects --
 const melodyOnlySelect = document.getElementById("melody-only");
 const melodyPlusSelect = document.getElementById("melody-plus-harmony");
 const fullSongsSelect = document.getElementById("full-songs");
 
-// -- Song Instruments
+// -- Song Instruments --
 const melodyInstSelect = document.getElementById("melody-instrument");
 const harmony1InstSelect = document.getElementById("harmony1-instrument");
 const harmony2InstSelect = document.getElementById("harmony2-instrument");
@@ -31,10 +30,7 @@ let scheduledNotes = [];
 let playing = false;
 
 // --- GM Instruments ---
-/*  The official 128 + Extra
-    soundfont-player v0.12.0 by danigb
-    percussion/FX instruments are appended at the end of many Soundfont collections.
-    breath_noise, seashore, bird_tweet, telephone_ring, helicopter, applause, gunshot. */
+/* "General Midi" instruments supplied from soundfont-player v0.12.0 by danigb */
 const GM_INSTRUMENTS = [
     "acoustic_grand_piano", "bright_acoustic_piano", "electric_grand_piano",
     "honky_tonk_piano", "electric_piano_1", "electric_piano_2", "harpsichord",
@@ -185,8 +181,6 @@ function parseMML(mml) {
                 duration: totalBeats,  // stored in beats
                 volume: currentVol
             });
-
-            continue;
         }
     }
 
@@ -199,19 +193,20 @@ async function loadSongs() {
         const res = await fetch("/songs");
         const {melodyOnly, melodyPlusHarmony, fullSongs} = await res.json();
 
-        function populateSelect(select, songs) {
+        async function populateSelect(select, songs) {
             select.innerHTML = '<option value="">-- Select --</option>';
             songs.forEach(song => {
                 const option = document.createElement("option");
+                option.className = 'song-option'
                 option.value = JSON.stringify(song);
                 option.textContent = song.title;
                 select.appendChild(option);
-            });
+            })
         }
 
-        populateSelect(melodyOnlySelect, melodyOnly);
-        populateSelect(melodyPlusSelect, melodyPlusHarmony);
-        populateSelect(fullSongsSelect, fullSongs);
+        await populateSelect(melodyOnlySelect, melodyOnly);
+        await populateSelect(melodyPlusSelect, melodyPlusHarmony);
+        await populateSelect(fullSongsSelect, fullSongs);
         console.log("Songs loaded successfully.");
     } catch (err) {
         console.error("Failed to load songs:", err);
@@ -235,6 +230,7 @@ fetch(url).then((response) => {
 });
 
 */
+
 // --- Preload Instrument ---
 async function preloadInstrument(name) {
     return await Soundfont.instrument(audioCtx, name, {
@@ -406,8 +402,7 @@ async function loadInstruments() {
     populateInstrumentSelect(harmony2InstSelect);
 }
 
-// EXPERIMENTAL SECTION CONTAINS LARGE AMOUNTS OF DUPLICATED CODE, Routing a service for this is likely needed
-
+// --- EXPERIMENTAL SECTION CONTAINS LARGE AMOUNTS OF DUPLICATED CODE, Routing a service for this is likely needed ---
 
 // --- MML Editor Area ---
 // -- Editor DOM --
@@ -542,7 +537,57 @@ previewBtn.addEventListener("click", scheduleEditorPlayback);
 stopEditorBtn.addEventListener("click", stopEditorPlayback);
 clearEditorBtn.addEventListener("click", clearEditorFields);
 
-// EXPERIMENTAL SECTION END
+
+// addEventListener('click', () => openChar(character));
+// --- Dialog box for Guide/Legend section ---
+const legendBtn = document.getElementById("legend");
+legendBtn.addEventListener("click", openLegendDialog);
+
+function openLegendDialog() {
+    const dialog = document.getElementById('mmlLegendDialog');
+
+    // Fixed: Use backticks for template literals
+    dialog.innerHTML = `
+            <button class="close-dialog">✕</button>
+            <div class="reference-grid">
+        <div>
+            <h4>Tips for beginners</h4>
+            <p>Use one track first (melody only).<br>Play with tempo and octave. You’ll get a feel for how
+                music “moves”.<br>Try repeating patterns. & remember to experiment.<br> You can’t “break”
+                anything — just adjust letters and numbers.
+            </p>
+            <p>One small thing to be aware about, is that tempo has to be set in track 1 - the melody<br>
+                A standard template before your notes could look like this "t120 o4 l4 v12"</p>
+        </div>
+
+        <div>
+            <h4>Notes</h4>
+            <p>C D E F G A B<br>Use + or # for sharps, - for flats (e.g. C+, D-)</p>
+        </div>
+        <div>
+            <h4>Length</h4>
+            <p>l4 = quarter note<br>l8 = eighth note<br>Use "." to extend (e.g. l8.)</p>
+        </div>
+        <div>
+            <h4>Volume / Tempo</h4>
+            <p> v0 = no volume<br>v8 = medium volume<br>v15 = max volume<br>t120 = tempo 120 BPM</p>
+        </div>
+        <div>
+            <h4>Octave / Tie</h4>
+            <p> o3 = lower pitch<br>o4 = middle pitch <br>o5 = higher pitch<br> & = tie notes<br>&gt; / &lt; = octave up/down</p>
+        </div>
+    </div>
+        `;
+
+    dialog.showModal();
+
+    // Fixed: selector and close() function call
+    const closeBtn = dialog.querySelector('.close-dialog');
+    closeBtn.onclick = () => dialog.close();
+}
+
+
+// --- EXPERIMENTAL SECTION END ---
 
 
 // --- Initialize Page ---
