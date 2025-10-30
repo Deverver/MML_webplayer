@@ -1,7 +1,7 @@
 // tests/app.test.js
 import request from "supertest";
 import { describe, it, expect } from "vitest";
-import server from "../src/server.js";
+import server from "../server.js";
 
 /*
   We’re testing that our Express routes and controllers:
