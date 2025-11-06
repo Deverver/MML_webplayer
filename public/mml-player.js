@@ -35,14 +35,14 @@ function parseMMLToEvents(mml, opts = {}) {
     const tokenRegex = /(t\d+|v\d+|l\d+|o\d+|[<>]|&|r\d*\.?|[a-gA-G][\+#-]?\d*\.?)/g;
     const tokens = mml.match(tokenRegex) || [];
 
-    let octave = 4, tempo = defaultTempo, defaultLength = defaultLen, currentVol = 15, timeSec = 0;
-    const tempoHistory = [{ tempo, atTime: 0 }];
+    let octave = 4, tempo = defaultTempo, defaultLength = defaultLen, currentVol = 15;
+    let beatPosition = 0;  // Track position in beats
+    const tempoHistory = [{ tempo, atBeat: 0 }];
 
     const beatsFromLength = (lenDen, dotted) => {
         const beats = 4 / lenDen;
         return dotted ? beats * 1.5 : beats;
     };
-    const secondsFromBeats = (beats, bpm) => beats * (60 / bpm);
 
     const parseNoteToken = tok => {
         const m = tok.match(/^([a-gA-G])([\+#-]?)(\d+)?(\.)?$/);
@@ -53,7 +53,11 @@ function parseMMLToEvents(mml, opts = {}) {
     for (let i = 0; i < tokens.length; i++) {
         const token = tokens[i];
 
-        if (token.startsWith('t')) { tempo = parseInt(token.slice(1), 10) || tempo; tempoHistory.push({ tempo, atTime: timeSec }); continue; }
+        if (token.startsWith('t')) {
+            tempo = parseInt(token.slice(1), 10) || tempo;
+            tempoHistory.push({ tempo, atBeat: beatPosition });
+            continue;
+        }
         if (token.startsWith('l')) { defaultLength = parseInt(token.slice(1), 10) || defaultLength; continue; }
         if (token.startsWith('v')) { currentVol = parseInt(token.slice(1), 10) || currentVol; continue; }
         if (token.startsWith('o')) { octave = Math.min(Math.max(parseInt(token.slice(1), 10), 0), 9); continue; }
@@ -64,7 +68,8 @@ function parseMMLToEvents(mml, opts = {}) {
             const m = token.match(/^r(\d+)?(\.)?$/);
             const lenDen = m && m[1] ? parseInt(m[1], 10) : defaultLength;
             const dotted = !!(m && m[2]);
-            timeSec += secondsFromBeats(beatsFromLength(lenDen, dotted), tempo);
+            const restBeats = beatsFromLength(lenDen, dotted);
+            beatPosition += restBeats;  // Advance time but don't create event
             continue;
         }
 
@@ -79,44 +84,86 @@ function parseMMLToEvents(mml, opts = {}) {
                 look += 2;
             }
             i = look - 1;
-            events.push({ note: normalizeNoteString(parsed.letter, parsed.accidental, octave), durationBeats: totalBeats, volume: currentVol });
+
+            // Store event with its beat position
+            events.push({
+                note: normalizeNoteString(parsed.letter, parsed.accidental, octave),
+                startBeat: beatPosition,
+                durationBeats: totalBeats,
+                volume: currentVol
+            });
+
+            beatPosition += totalBeats;
         }
     }
 
-    return { events, tempoHistory };
+    return { events, tempoHistory, totalBeats: beatPosition };
 }
 
 // --- Parse multiple tracks, align events globally ---
 function parseMMLTracks(tracksMML, opts = {}) {
     const trackData = tracksMML.map(mml => parseMMLToEvents(mml, opts));
 
-    // Build global tempo timeline
+    // Build global tempo timeline (in beats)
     const tempoTimeline = [];
-    trackData.forEach(track => track.tempoHistory.forEach(h => tempoTimeline.push({ tempo: h.tempo, atBeat: h.atTime })));
+    trackData.forEach(track => {
+        track.tempoHistory.forEach(h => {
+            tempoTimeline.push({ tempo: h.tempo, atBeat: h.atBeat });
+        });
+    });
     tempoTimeline.sort((a, b) => a.atBeat - b.atBeat);
 
-    // Compute absolute start times for all notes using global tempo
-    const secondsFromBeats = (beats, bpm) => beats * (60 / bpm);
-    const globalEvents = trackData.map(track => {
-        let absTime = 0, currentBpm = tempoTimeline[0]?.tempo || opts.tempo || 120;
-        const eventsWithTime = [];
-        let beatCounter = 0;
+    // Remove duplicate tempo changes at same beat
+    const uniqueTempoTimeline = [];
+    for (let i = 0; i < tempoTimeline.length; i++) {
+        if (i === 0 || tempoTimeline[i].atBeat !== tempoTimeline[i-1].atBeat) {
+            uniqueTempoTimeline.push(tempoTimeline[i]);
+        }
+    }
 
-        track.events.forEach(ev => {
-            // Update tempo if needed
-            while (tempoTimeline.length && beatCounter >= tempoTimeline[0].atBeat) {
-                currentBpm = tempoTimeline.shift().tempo;
+    // Convert beats to seconds using global tempo timeline
+    function beatsToSeconds(beatPos) {
+        let time = 0;
+        let currentBeat = 0;
+        let currentTempo = uniqueTempoTimeline[0]?.tempo || opts.tempo || 120;
+
+        for (let i = 0; i < uniqueTempoTimeline.length; i++) {
+            const tempoChange = uniqueTempoTimeline[i];
+
+            if (beatPos <= tempoChange.atBeat) {
+                // Target is before this tempo change
+                const beatsToGo = beatPos - currentBeat;
+                time += (beatsToGo * 60) / currentTempo;
+                return time;
             }
-            const durSec = secondsFromBeats(ev.durationBeats, currentBpm);
-            eventsWithTime.push({ note: ev.note, start: absTime, duration: durSec, volume: ev.volume });
-            absTime += durSec;
-            beatCounter += ev.durationBeats;
-        });
 
-        return eventsWithTime;
+            // Add time up to this tempo change
+            const beatsDelta = tempoChange.atBeat - currentBeat;
+            time += (beatsDelta * 60) / currentTempo;
+            currentBeat = tempoChange.atBeat;
+            currentTempo = tempoChange.tempo;
+        }
+
+        // After last tempo change
+        const beatsToGo = beatPos - currentBeat;
+        time += (beatsToGo * 60) / currentTempo;
+        return time;
+    }
+
+    // Convert all events to absolute times
+    const globalEvents = trackData.map(track => {
+        return track.events.map(ev => ({
+            note: ev.note,
+            start: beatsToSeconds(ev.startBeat),
+            duration: beatsToSeconds(ev.startBeat + ev.durationBeats) - beatsToSeconds(ev.startBeat),
+            volume: ev.volume
+        }));
     });
 
-    const totalDuration = Math.max(...globalEvents.map(ev => ev.reduce((a, b) => Math.max(a, b.start + b.duration), 0)));
+    const totalDuration = Math.max(...globalEvents.map(track =>
+        track.reduce((max, ev) => Math.max(max, ev.start + ev.duration), 0)
+    ), 0);
+
     return { globalEvents, totalDuration };
 }
 

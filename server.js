@@ -42,7 +42,7 @@ function getFilteredSongs() {
         const hasMelody = song.melody?.trim();
         const hasH1 = song.harmony1?.trim();
         const hasH2 = song.harmony2?.trim();
-        if (!hasMelody) return;
+        if (!hasMelody) return; // Ignore songs with no melody
 
         if (hasMelody && !hasH1 && !hasH2) melodyOnly.push(song);
         else if (hasMelody && (hasH1 || hasH2) && !(hasH1 && hasH2)) melodyPlusHarmony.push(song);

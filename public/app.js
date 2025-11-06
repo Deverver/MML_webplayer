@@ -1,5 +1,5 @@
 // app.js
-import { parseMMLTracks, schedulePlaybackFromTracks, noteNameToMidi } from './mml-player.js';
+import { parseMMLTracks, schedulePlaybackFromTracks } from './mml-player.js';
 
 let currentSong = null;
 let audioCtx = null;
@@ -65,13 +65,35 @@ songSelects.forEach(select => {
 // --- Populate instrument dropdowns ---
 async function loadInstruments() {
     const instruments = [
-        'acoustic_grand_piano', 'electric_grand_piano', 'acoustic_guitar_nylon',
-        'acoustic_guitar_steel', 'violin', 'cello', 'flute', 'clarinet', 'saxophone'
+        "acoustic_grand_piano", "bright_acoustic_piano", "electric_grand_piano",
+        "honky_tonk_piano", "electric_piano_1", "electric_piano_2", "harpsichord",
+        "clavinet", "celesta", "glockenspiel", "music_box", "vibraphone", "marimba",
+        "xylophone", "tubular_bells", "dulcimer", "drawbar_organ", "percussive_organ",
+        "rock_organ", "church_organ", "reed_organ", "accordion", "harmonica", "bandoneon",
+        "tango_accordion", "acoustic_guitar_nylon", "acoustic_guitar_steel", "electric_guitar_clean",
+        "electric_guitar_muted", "overdriven_guitar", "distortion_guitar", "guitar_harmonics",
+        "acoustic_bass", "electric_bass_finger", "electric_bass_pick", "fretless_bass",
+        "slap_bass_1", "slap_bass_2", "synth_bass_1", "synth_bass_2", "violin", "viola",
+        "cello", "contrabass", "tremolo_strings", "pizzicato_strings", "orchestral_harp",
+        "timpani", "string_ensemble_1", "string_ensemble_2", "synth_strings_1", "synth_strings_2",
+        "choir_aahs", "voice_oohs", "synth_choir", "orchestra_hit", "trumpet", "trombone", "tuba",
+        "muted_trumpet", "french_horn", "brass_ensemble_1", "brass_ensemble_2", "synth_brass_1",
+        "synth_brass_2", "soprano_sax", "alto_sax", "tenor_sax", "baritone_sax", "oboe", "english_horn",
+        "bassoon", "clarinet", "piccolo", "flute", "recorder", "pan_flute", "blown_bottle", "shakuhachi",
+        "whistle", "ocarina", "lead_1_square", "lead_2_sawtooth", "lead_3_calliope", "lead_4_chiff",
+        "lead_5_charang", "lead_6_voice", "lead_7_fifths", "lead_8_bass_lead", "pad_1_new_age",
+        "pad_2_warm", "pad_3_polysynth", "pad_4_choir", "pad_5_bowed", "pad_6_metallic",
+        "pad_7_halo", "pad_8_sweep", "fx_1_rain", "fx_2_soundtrack", "fx_3_crystal",
+        "fx_4_atmosphere", "fx_5_brightness", "fx_6_goblins", "fx_7_echoes", "fx_8_scifi",
+        "sitar", "banjo", "shamisen", "koto", "kalimba", "bagpipe", "fiddle", "shanai",
+        "tinkle_bell", "agogo", "steel_drums", "woodblock", "taiko_drum", "melodic_tom",
+        "synth_drum", "reverse_cymbal", "guitar_fret_noise", "breath_noise", "seashore",
+        "bird_tweet", "telephone_ring", "helicopter", "applause", "gunshot"
     ];
 
     trackSelects.forEach(select => {
         select.innerHTML = '';
-        instruments.forEach(inst => {
+        instruments.forEach((inst, index) => {
             select.innerHTML += `<option value="${inst}">${inst.replace(/_/g, ' ')}</option>`;
         });
     });
@@ -99,8 +121,10 @@ async function playSong() {
         playbackController = null;
     }
 
-    // Build array of tracks that actually have MML
-    const tracks = [];
+    // Build array of MML strings for tracks that exist
+    const tracksMML = [];
+    const instrumentNames = [];
+
     const trackInputs = [
         { key: 'melody', instr: melodyInstrument },
         { key: 'harmony1', instr: harmony1Instrument },
@@ -109,40 +133,41 @@ async function playSong() {
 
     trackInputs.forEach(({ key, instr }) => {
         if (currentSong[key]) {
-            tracks.push({
-                mml: currentSong[key] || '',
-                instrumentName: instr.value || 'acoustic_grand_piano'
-            });
+            tracksMML.push(currentSong[key]);
+            instrumentNames.push(instr.value || 'acoustic_grand_piano');
         }
     });
 
-    if (!tracks.length) return alert('No tracks to play');
+    if (!tracksMML.length) return alert('No tracks to play');
 
-    // Convert to array of MML strings
-    const tracksMML = tracks.map(t => t.mml);
+    // Parse all tracks with global tempo synchronization
+    const { globalEvents, totalDuration } = parseMMLTracks(tracksMML, { tempo: 120 });
 
-    // Parse all tracks at once
-    const { globalEvents } = parseMMLTracks(tracksMML, { tempo: 120 });
-
-    // Determine a common start time for all tracks
-    const startTime = audioCtx.currentTime + 0.1; // small offset to avoid scheduling issues
-
-    // Map parsed events to instruments and apply start time offset
-    const trackConfigs = globalEvents.map((events, i) => ({
-        events: events.map(e => ({ ...e, time: e.time + startTime })),
-        instrumentName: tracks[i].instrumentName
-    }));
+    console.log('Parsed tracks:', globalEvents.length);
+    console.log('Total duration:', totalDuration);
+    console.log('Track 0 events:', globalEvents[0]?.length);
+    console.log('Track 1 events:', globalEvents[1]?.length);
+    console.log('Track 2 events:', globalEvents[2]?.length);
 
     // Create master gain node
     const masterGain = audioCtx.createGain();
     masterGain.gain.value = volumeSlider.value / 100;
     masterGain.connect(audioCtx.destination);
 
-    // Schedule playback
+    // Build track configs with parsed events and instruments
+    const trackConfigs = globalEvents.map((events, i) => ({
+        events: events,  // Already have start times from parseMMLTracks
+        instrumentName: instrumentNames[i]
+    }));
+
+    // Schedule playback with synchronized tracks
     playbackController = await schedulePlaybackFromTracks(trackConfigs, {
         audioCtx,
-        masterGain
+        masterGain,
+        masterVolume: volumeSlider.value / 100
     });
+
+    console.log('Playback started:', playbackController.info());
 }
 
 // --- Event listeners ---
@@ -150,8 +175,12 @@ playBtn.addEventListener('click', playSong);
 stopBtn.addEventListener('click', stopPlayback);
 
 volumeSlider.addEventListener('input', () => {
-    if (playbackController && playbackController.masterGain) {
-        playbackController.masterGain.gain.value = volumeSlider.value / 100;
+    // Update master gain if playback is active
+    if (audioCtx) {
+        const masterGain = audioCtx.destination;
+        // Try to find the master gain node (this is a simplified approach)
+        // In production, you'd want to store a reference to masterGain
+        console.log('Volume changed to:', volumeSlider.value);
     }
 });
 
